@@ -34,7 +34,7 @@ sc = SparkContext(conf = conf)
 # In[ ]:
 
 
-line=sc.textFile("F:\\fact100.txt")
+line=sc.textFile("F:\\30-Work\\DataEngineer\\data\nyse\\companylist_noheader.csv")
 
 
 # In[ ]:
