@@ -1,6 +1,6 @@
-ipython-sql
 py-postgresql
 psycopg2-binary
 sqlalchemy
-sqlalchemy
+pandas
+ipython-sql
 
