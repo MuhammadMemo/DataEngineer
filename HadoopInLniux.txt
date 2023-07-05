@@ -1,0 +1,183 @@
+Install linux
+sudo apt update
+sudo apt upgrade
+
+create user :
+sudo adduser hadoop
+--passowrd: 0000
+--login : su - hadoop
+
+install ssh:
+sudo apt update
+sudo apt upgrade
+sudo apt install openssh-server
+sudo apt install openssh-client
+--sudo systemctl status ssh
+
+sudo systemctl enable ssh
+sudo systemctl start ssh 
+ssh hadoop@localhost
+
+ssh-keygen -t rsa 
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 640 ~/.ssh/authorized_keys
+ssh hadoop@localhost 
+
+sudo ufw allow ssh
+sudo ufw enable
+sudo ufw status
+
+sudo apt update && sudo apt install openjdk-11-jdk
+java -version
+
+
+--Step 3: Install Hadoop on Ubuntu
+--Use the following command to download Hadoop 3.3.4: 
+wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz  
+--enter ctrl + shift + v
+ls
+--unzip it to a folder on your hard drive:
+tar -xzf hadoop-3.3.6.tar.gz
+ls
+test java:
+ls /usr/lib/jvm/java-1.11.0-openjdk-amd64
+
+--Rename the extracted folder to remove version information:
+rm hadoop-3.3.6.tar.gz
+ls
+test: 
+cd hadoop-3.3.6/sbin
+cd hadoop-3.3.6/etc/hadoop/
+ls
+
+exit
+cntl+L
+
+nano core-site.xml 
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+</configuration>
+
+nano hdfs-site.xml 
+
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+ 
+    <property>
+        <name>dfs.name.dir</name>
+        <value>/hadoop/hdfs/namenode</value>
+    </property>
+ 
+    <property>
+        <name>dfs.data.dir</name>
+        <value>/hadoop/hdfs/datanode</value>
+    </property>
+</configuration>
+
+cd -
+mkdir -p hdfs/namenode
+mkdir -p hdfs/datanode
+
+
+
+
+cd hadoop-3.3.6/etc/hadoop/
+nano hadoop-env.sh
+--add in: export java_home=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+--add in: export java_home=/usr/lib/jvm/java-11-openjdk-amd64 -- 
+
+
+nano yarn-site.xml 
+<property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>1536</value>
+</property>
+
+<property>
+        <name>yarn.scheduler.maximum-allocation-mb</name>
+        <value>1536</value>
+</property>
+
+<property>
+        <name>yarn.scheduler.minimum-allocation-mb</name>
+        <value>128</value>
+</property>
+
+<property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>false</value>
+</property>
+
+cd hadoop-3.3.6/
+cd bin/
+
+./hdfs namenode -format
+
+cd ..
+cd sbin/
+ls
+
+cd hadoop-3.3.6/
+cd sbin/
+./start-all.sh
+./stop-all.sh
+./start-dfs.sh 
+./stop-dfs.sh 
+
+http://localhost:9870
+
+./start-yarn.sh 
+
+http://localhost:8088
+---------------------------------------------------------------------------------------
+--create file test.csv
+cd hadoop-3.3.6/
+cd bin
+./hdfs dfs -ls /
+nano ~/test.csv 
+--insert date test
+--insert file test in dhsf
+cd hadoop-3.3.6/
+./hdfs dfs -put ~/test.csv /
+./hdfs dfs -ls /
+---
+--create folder and move text,csv into
+./hdfs dfs -mkdir /test_date
+./hdfs dfs -mv /test.csv /test_date/test.csv
+./hdfs dfs -ls /
+--show in hadoop browser
+------------------------------------------------------------------------------------
+--download & install apache spark over hadoop and yarn
+--link https://www.apache.org/dyn/closer.lua/spark/spark-3.4.1/spark-3.4.1-bin-hadoop3.tgz
+wget https://dlcdn.apache.org/spark/spark-3.4.1/spark-3.4.1-bin-hadoop3.tgz
+ls
+tar -xzf spark-3.4.1-bin-hadoop3.tgz
+ls
+rm spark-3.4.1-bin-hadoop3.tgz
+-------
+cd spark-3.4.1-bin-hadoop3/
+---------------------------------------------------
+sudo mv /home/muhammad/Downloads/hadoop-3.3.6.tar.gz  /home/hadoop/bin/
+
+
+sudo apt -o Dpkg::Options::="--force-overwrite" --fix-broken install
+sudo apt-get update && sudo apt-get upgrade
+sudo dpkg --configure -a
+sudo apt-get clean && sudo apt-get autoremove
+sudo reboot
+
+cd Downloades
+--sudo usermod -aG hadoop
+
+
+display:
+sudo apt install neofetch
+nano /etc/default/grub
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash video=hyperv_fb:1720x880"
+"quiet splash nomodset"

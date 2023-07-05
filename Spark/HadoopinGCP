@@ -1,0 +1,62 @@
+Create account in cloude.google
+Create Cluster
+Copy ssh
+install remote development in vcsode
+open cmd and write ssh -->  gcloud compute ssh --zone "us-central1-b" "cluster-6685-m" --project "my-project-1-390410"
+open cmd -->  ssh -i C:/Users/administrator/.ssh/google_compute_engine Muhammad@34.72.102.21
+
+ssh Muhammad@34.122.218.184
+ssh-keygen
+cd /Users/Tech Shop/.ssh/
+tail authorized_keys.pub
+
+ssh -p 22  Muhammad@34.72.102.21
+open cmd -->  ssh -i C:/Users/administrator/.ssh 192.168.100.21
+ssh -p 22  programmer_muhammad@34.132.145.50
+
+ssh -i C:\Users\Tech Shop\.ssh\authorized_keys
+ssh -i C:/Users/Tech Shop/.ssh/authorized_keys
+
+ssh -i C:/Users/Tech Shop/.ssh/authorized_keys muhammad@34.122.218.184
+ssh -i C:/Users/Tech Shop/.ssh/SHA256:Ohy+uaVhdZwRtWsMSWiTv1FJDxK4vb4ZPjdzAyZvbxE muhammad@34.122.218.184
+ssh -i C:/Users/Tech Shop/.ssh/Ohy+uaVhdZwRtWsMSWiTv1FJDxK4vb4ZPjdzAyZvbxE muhammad@34.122.218.184
+
+
+ssh -i C:\Users\Tech Shop\.ssh\SHA256 muhammad@34.122.218.184
+
+ssh -i  F:\authorized_keys
+
+
+ssh -p 22  muhammad@192.168.100.21
+
+ssh -p 22  Muhammad@34.140.8.237
+gcloud config set account programmer.muhammad@gmail.com
+
+restart:
+        sudo apt install apache2
+        sudo service apache2 restart
+        sudo -i
+        sudo service apache2 start   .....
+
+ssh -vvv -i C:/Users/administrator/.ssh/google_compute_engine Muhammad@34.72.102.21
+
+curl "http://metadata.google.internal/computeMetadata/v1/oslogin/users?username=programmer_muhammad@gmail_com" -H "Metadata-Flavor: Google"
+curl "http://metadata.google.internal/computeMetadata/v1/oslogin/users?username=programmer.muhammad@gmail.com" -H "Metadata-Flavor: Google"
+curl "http://metadata.google.internal/computeMetadata/v1/oslogin/authorize?policy=login&email=programmer.muhammad@gmail.com" -H "Metadata-Flavor: Google"
+
+curl "http://metadata.google.internal/computeMetadata/v1/instance/disks/?recursive=true" -H "Metadata-Flavor: Google"
+curl "http://metadata.google.internal/computeMetadata/v1/instance/disks/?recursive=true&alt=text" -H "Metadata-Flavor: Google"
+
+
+
+ssh-keygen -t rsa -f C:/Users/Administrator/.ssh/cluster-m01 -C muhammad -b 2048
+
+host   : cluster-m01
+user muhammad
+host name 34.91.104.207
+location : C:/Users/Administrator/.ssh/cluster-m01
+
+rm -Rf ~/.vscode-server/
+
+gcloud compute ssh --zone "europe-west4-a" "cluster-m01-m" --project "my-project-1-390410"
+
