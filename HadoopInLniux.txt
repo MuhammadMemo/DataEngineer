@@ -1,11 +1,12 @@
 Install linux
-sudo apt update
-sudo apt upgrade
+sudo apt update && sudo apt upgrade
+
 
 create user :
 sudo adduser hadoop
 --passowrd: 0000
 --login : su - hadoop
+-- cheange hadoop user to admin
 
 install ssh:
 sudo apt update
@@ -14,14 +15,24 @@ sudo apt install openssh-server
 sudo apt install openssh-client
 --sudo systemctl status ssh
 
+
+--sudo apt-get install ssh
+
 sudo systemctl enable ssh
 sudo systemctl start ssh 
-ssh hadoop@localhost
+ssh hadoop@localhost -p 22
+ssh hadoop@127.0.0.1 -p 22
+
+ssh hadoop@192.168.220.129 -p 22
 
 ssh-keygen -t rsa 
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 chmod 640 ~/.ssh/authorized_keys
 ssh hadoop@localhost 
+--TNlriQax/cWtTNz4H4DF+yQzQF1wk2Q3ZT783DWnN workr 1
+ls ~/.ssh/id_rsa*
+
+ssh-copy-id hadoop@127.0.0.1
 
 sudo ufw allow ssh
 sudo ufw enable
@@ -93,32 +104,17 @@ nano hadoop-env.sh
 --add in: export java_home=/usr/lib/jvm/java-11-openjdk-amd64 -- 
 
 
+--add in: export java_home=/usr/lib/jvm/java-8-openjdk-amd64 -- 
+
 nano yarn-site.xml 
-<property>
-        <name>yarn.nodemanager.resource.memory-mb</name>
-        <value>1536</value>
-</property>
-
-<property>
-        <name>yarn.scheduler.maximum-allocation-mb</name>
-        <value>1536</value>
-</property>
-
-<property>
-        <name>yarn.scheduler.minimum-allocation-mb</name>
-        <value>128</value>
-</property>
-
-<property>
-        <name>yarn.nodemanager.vmem-check-enabled</name>
-        <value>false</value>
-</property>
-
+--File
 cd hadoop-3.3.6/
 cd bin/
 
 ./hdfs namenode -format
 
+nano capacity-scheduler.xml   
+--File
 cd ..
 cd sbin/
 ls
@@ -147,9 +143,10 @@ cd hadoop-3.3.6/
 ./hdfs dfs -put ~/test.csv /
 ./hdfs dfs -ls /
 ---
---create folder and move text,csv into
+--create folder and move text,csv into 
 ./hdfs dfs -mkdir /test_date
 ./hdfs dfs -mv /test.csv /test_date/test.csv
+hadoop@ubuntu:~/hadoop-3.3.6/bin$ ./hdfs dfs -mv yellow_tripdata_2022-02.parquet  /test_date/yellow_tripdata_2022-02.parquet
 ./hdfs dfs -ls /
 --show in hadoop browser
 ------------------------------------------------------------------------------------
@@ -160,11 +157,138 @@ ls
 tar -xzf spark-3.4.1-bin-hadoop3.tgz
 ls
 rm spark-3.4.1-bin-hadoop3.tgz
--------
+--------------------
+cd spark-3.4.1-bin-hadoop3/conf/
+
+ls
+cp spark-env.sh.template spark-env.sh
+nano spark-env.sh
+--add in file 
+export HADOOP_CONF_DIR=/home/hadoop-3.3.6/hadoop/etc/hadoop/
+export YARN_CONF_DIR=/home/hadoop-3.3.6/hadoop/etc/hadoop/
+export PYSPARK_PYTHON=python3
+
+export HADOOP_CONF_DIR=/home/hadoop-3.3.6/hadoop/etc/hadoop/
+export YARN_CONF_DIR=/home/hadoop-3.3.6/hadoop/etc/hadoop/
+export PYSPARK_PYTHON=python3
+
+
+
+hadoop-3.3.6/etc/hadoop/
+----
+
+
+cp workers.template workers
+nano workers
+--add
+localhost
+--192.168.220.130
+--192.168.100.22
+---------
+
+--running hadoop and yarn
 cd spark-3.4.1-bin-hadoop3/
+cd bin/
+ls
+----done----
+
+------------------------------------------------------------------------
+Monitor Your Spark Applications
+When you submit a job, Spark Driver automatically starts a web UI on port 4040 that displays information about the application. However, when execution is finished, the Web UI is dismissed with the application driver and can no longer be accessed.
+
+Spark provides a History Server that collects application logs from HDFS and displays them in a persistent web UI. The following steps will enable log persistence in HDFS:
+
+Edit $SPARK_HOME/conf/spark-defaults.conf and add the following lines to enable Spark jobs to log in HDFS:
+
+
+File: $SPARK_HOME/conf/spark-defaults.conf
+spark.eventLog.enabled  true
+spark.eventLog.dir hdfs://node-master:9000/spark-logs
+Create the log directory in HDFS:
+
+hdfs dfs -mkdir /spark-logs
+Configure History Server related properties in $SPARK_HOME/conf/spark-defaults.conf:
+
+
+File: $SPARK_HOME/conf/spark-defaults.conf
+spark.history.provider            org.apache.spark.deploy.history.FsHistoryProvider
+spark.history.fs.logDirectory     hdfs://localhost:9000/spark-logs
+spark.history.fs.update.interval  10s
+spark.history.ui.port             18080
+You may want to use a different update interval than the default 10s. If you specify a bigger interval, you will have some delay between what you see in the History Server and the real time status of your application. If you use a shorter interval, you will increase I/O on the HDFS.
+
+Run the History Server:
+
+$SPARK_HOME/sbin/start-history-server.sh
+Repeat steps from previous section to start a job with spark-submit that will generate some logs in the HDFS:
+
+Access the History Server by navigating to http://localhost:18080 in a web browser:
+
+spark-3.4.1-bin-hadoop3/sbin/start-history-server.sh
+
+spark-sql> set spark.SQL.warehouse.dir
+spark-sql> !hdfs dfs -ls /user/
+**************************************************************************************
+--Run
+hadoop-3.3.6/sbin/start-dfs.sh
+hadoop-3.3.6/sbin/start-yarn.sh 
+-- or hadoop-3.3.6/sbin/start-all.sh
+hadoop@ubuntu:~$ schematool -initSchema -dbType derby;
+spark-3.4.1-bin-hadoop3/bin/pyspark --master yarn --queue dev --name py_app
+spark-3.4.1-bin-hadoop3/bin/spark-shell --master yarn --queue dev --name query_app
+spark-3.4.1-bin-hadoop3/bin/spark-sql --master yarn --queue prod --name query_app
+http://localhost:9870
+http://localhost:8088
+ssh hadoop@192.168.220.129 -p 22
+
+--get data
+
+df=spark.read.csv("hdfs://localhost:9000/test_date/test.csv", header=True)
+df.show(5)
+df.write.mode("Overwrite").parquet("hdfs://localhost:9000/test_date/test.parquet")
+df.read.parquet("hdfs://localhost:9000/test_date/test.parquet")
+--spark-sql
+create table Mytable (id int,name string);
+insert into mytable(1,'muhammad');
+select * from mytable;
+
+*******************************************
+
+********************************************************************************************
+ Downloading Hive
+$ cd Downloads
+$ ls
+
+apache-hive-0.14.0-bin.tar.gz
+$ tar zxvf apache-hive-0.14.0-bin.tar.gz
+$ ls
+--------------------------
+hadoop-3.3.6/sbin/stop-dfs.sh
+hadoop-3.3.6/sbin/stop-yarn.sh
+
+spark-submit --conf spark.dynamicAllocation.enabled=false
+spark-submit --deploy-mode cluster --master yarn \
+        --driver-memory 3g --executor-memory 3g \
+        --num-executors 2 --executor-cores 2 \
+        --conf spark.dynamicAllocation.enabled=false \
+        readcsv.py
+---------------------
+export PYSPARK_SUBMIT_ARGS='--master yarn --deploy -mode cluster pyspark-shell'
+--cluster mode - the spark driver is run in the spark master node
+--client mode - the spark driver is run from the client side where the interactive shell is run.
+
+------------------------
+
+---------------------------------
+--open port 
+sudo ufw allow 22/tc
+sudo ufw status verbose
+sudo ufw allow http
+sudo ufw allow https
 ---------------------------------------------------
 sudo mv /home/muhammad/Downloads/hadoop-3.3.6.tar.gz  /home/hadoop/bin/
-
+yarn application -list
+yarn application -kill <jobid>
 
 sudo apt -o Dpkg::Options::="--force-overwrite" --fix-broken install
 sudo apt-get update && sudo apt-get upgrade
@@ -181,3 +305,79 @@ sudo apt install neofetch
 nano /etc/default/grub
 GRUB_CMDLINE_LINUX_DEFAULT="quiet splash video=hyperv_fb:1720x880"
 "quiet splash nomodset"
+
+****************************
+
+the same instllation all node and master--- 
+--- copy machin and cheange name and ip and ssh
+ master 192.168.220.129
+ worker 192.168.220.130
+
+add ip node in file workers 
+cd hadoop-3.3.6/etc/hadoop/
+cd /bin
+nano workers
+--add ip all node
+--------------------
+add worker
+ls -a
+cd .ssh
+ls
+nano authorized_keys --add workers Kye in master and workers
+------
+cd hadoop-3.3.6/etc/hadoop/
+add ip maser in:
+nano core-site.xml 
+<configuration>
+  <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://192.168.220.129:9000</value>
+    </property>
+</configuration>
+
+--add property in woekrs and master
+nano yarn-site.xml 
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>192.168.220.129</value>
+        <description>The hostname of the RM.</description>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.address</name>
+        <value>192.168.220.129:8032</value>
+        <description>The hostname of the RM.</description>
+    </property>
+
+add java  path in:
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+hadoop@ubuntworker:~/hadoop-3.3.6/etc/hadoop$ nano mapred-env.sh
+hadoop@ubuntworker:~/hadoop-3.3.6/etc/hadoop$ nano yarn-env.sh
+hadoop@ubuntworker:~/hadoop-3.3.6/etc/hadoop$ nano hadoop-env.sh
+
+
+
+<configuration>
+  <property>
+        <name>fs.default.name</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+</configuration>
+
+-----------------------------------
+--cheange in master and node mapred-site.xml
+cd hadoop-3.3.6/etc/hadoop/
+cp etc/hadoop/mapred-site.xml.template  etc/hadoop/mapred-site.xml
+
+vi etc/hadoop/mapred-site.xml
+<property>
+<name>mapreduce.framework.name</name>
+<value>yarn</value>
+</property>
+
+
+--start master only
+--Run
+hadoop-3.3.6/sbin/start-dfs.sh
+hadoop-3.3.6/sbin/start-yarn.sh 
+-- or hadoop-3.3.6/sbin/start-all.sh
+spark-3.4.1-bin-hadoop3/bin/pyspark --master yarn --queue dev --name py_app
