@@ -1,0 +1,6 @@
+py-postgresql
+psycopg2-binary
+sqlalchemy
+pandas
+ipython-sql
+
