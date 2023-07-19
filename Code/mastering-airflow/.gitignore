@@ -1,9 +1,0 @@
-airflow
-af-venv
-.idea
-.DS_Store
-/archive/
-__pycache__
-/archive/
-derby.log
-metastore_db
