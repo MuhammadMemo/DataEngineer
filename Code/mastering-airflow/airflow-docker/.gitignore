@@ -1,0 +1,6 @@
+dags
+logs
+plugins
+data
+.env
+airflow.sh
