@@ -1,12 +1,8 @@
-Install linex
+
 sudo apt update
 sudo apt upgrade
 sudo apt install neofetch
 cd Downloades
-sudo adduser hadoop
-passowrd: 0000
-grant admin for hadoop 
-login : su - hadoop
 Visit hadoop web site and downloade 
 wget https://dlcdn.apache.org/hadoop/common/hadoop-3.2.4/hadoop-3.2.4.tar.gz   --enter ctrl +shift + v
 ls
