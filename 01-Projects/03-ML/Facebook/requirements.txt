@@ -1,0 +1,7 @@
+facebook-api
+requests
+scikit-learn
+matplotlib
+textblob
+Arabic-Stopwords
+Tashaphyne
